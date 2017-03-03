@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+	http://www.springframework.org/schema/aop 
+	http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+	http://www.springframework.org/schema/context 
+	http://www.springframework.org/schema/context/spring-context-3.2.xsd
+	http://www.springframework.org/schema/mvc 
+	http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd  
+	">	 
+	<!--
+	 后置处理器，加载properites后在context配置文件中使用 ${XXX}来调用
+	也可在	
+	 -->
+	<bean id="overAllConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+  		<property name="locations">
+   			<list>
+    			<value>classpath:overAll.properties</value>
+   			</list>
+  		</property>
+	</bean>
+	
+	<!-- 允许代码内启用JSR-250注解配置 -->
+	<context:annotation-config/>
+	<!-- 指定静态配置文件位置 -->
+	<context:property-placeholder ignore-resource-not-found="true" location="classpath*:log4j.properties" />
+	
+	<!-- 自动view装配 -->
+	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">  
+        <property name="prefix" value="/app/"/>    
+        <property name="suffix" value=".html"/>
+        <property name="viewClass">  
+            <value>org.springframework.web.servlet.view.InternalResourceView</value>  
+        </property>  
+    </bean>  		
+	
+	<bean id="SpringContextHolder" class="com.zhongzhou.Excavator.springsupport.SpringContextHolder"></bean>  
+	
+	<!-- 定义annotation扫描范围 -->
+	<context:component-scan base-package="com.zhongzhou.Excavator">  
+          <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller" />   
+    </context:component-scan> 
+	<context:component-scan base-package="com.zhongzhou.Excavator">  
+    	<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller" />  
+    	<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Service" />  
+    </context:component-scan>  
+    <context:component-scan base-package="com.zhongzhou.common"/>   
+	
+	<!-- 发现是静态资源的请求，就将该请求转由Web应用服务器默认的Servlet处理 -->
+	<mvc:default-servlet-handler/> 	
+
+ 	<!-- 
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/*" /> 
+			<bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor" />
+	 	</mvc:interceptor>
+		<mvc:interceptor>
+			<mvc:mapping path="/**" />
+			<mvc:exclude-mapping path="/**/login.html"/>
+			<mvc:exclude-mapping path="/**/loginOut"/>
+			<mvc:exclude-mapping path="/**/isLogin"/>
+			<mvc:exclude-mapping path="/**/userLogin"/>
+			<mvc:exclude-mapping path="/**/userLoginOut"/>
+			<mvc:exclude-mapping path="/**/*.css"/>
+			<mvc:exclude-mapping path="/**/*.js"/>		
+			<mvc:exclude-mapping path="/**/*.jpg"/> 
+			<mvc:exclude-mapping path="/**/*.png"/> 
+			<mvc:exclude-mapping path="/**/*.gif"/> 
+			<bean class="com.zhongzhou.Excavator.web.interceptor.UserInterceptor"/>
+        </mvc:interceptor>
+	</mvc:interceptors>
+	 -->
+	
+	<!-- 配置bean validation-->
+	<bean id= "Validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
+        <property name="providerClass"  value="org.hibernate.validator.HibernateValidator"/>
+        <property name="validationMessageSource" ref="MessageSource"/>
+	</bean> 
+	<bean id= "MessageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+        <property name="basenames"> 
+        	<list>
+            	<value>staticdata.validationMessages</value>
+        	</list> 
+        </property>
+	</bean> 
+	<!-- 绑定到spring的web数据解析，目前暂不使用 ,在contoller中自行调用vlidate进行验证
+	<bean id= "webBindingInitializer" class= "org.springframework.web.bind.support.ConfigurableWebBindingInitializer">
+    	<property name= "conversionService" ref= "conversionService"/>
+    	<property name= "validator" ref= "validator"/>
+	</bean> 
+	--> 
+	
+	<!--  
+	<mvc:annotation-driven>
+        <mvc:message-converters>
+            <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+                <constructor-arg value="UTF-8"/>
+            </bean>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+    -->
+    
+    <!-- start - 重载Jackson的配置 ,使得Jackson可以转换单个数据到List Fro Spring 3.X-->
+	<mvc:annotation-driven>
+    	<mvc:message-converters register-defaults="true">
+        	<bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+            	<property name="objectMapper">
+                	<bean class="com.zhongzhou.common.override.Jackson.JacksonObjectMapperConvert"/>
+            	</property>
+        	</bean>
+    	</mvc:message-converters>
+	</mvc:annotation-driven>  
+	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter" p:ignoreDefaultModelOnRedirect="true">      
+        <property name="messageConverters">      
+            <list>  
+				<bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">    
+					<property name="supportedMediaTypes">    
+			   			<list>    
+			      			<value>application/json;charset=UTF-8</value>
+			  			</list>    
+			 		</property>  
+				</bean>    
+            </list>      
+        </property>      
+    </bean>
+	<!-- end - 重载Jackson的配置 ,使得Jackson可以转换单个数据到List Fro Spring 3.X -->
+	
+	<import resource = "classpath*:applicationContext-AOP.xml"/>
+	<!-- 配置DAO 和 DAO所属service-->
+	<import resource = "classpath*:applicationContext-DAO.xml"/>
+</beans>

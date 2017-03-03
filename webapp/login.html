@@ -1,0 +1,120 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!-- 在content 中添加 maximum-scale=1, user-scalable=no， 禁止用户缩放-- >
+		<!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+
+		<title>Part Rich Master Data Platform</title>
+		
+		<!-- Bootstrap core CSS -->
+		<link href="resources/Bootstrap/css/bootstrap.css"              rel="stylesheet"/>
+		<link href="resources/Font-Awesome/css/font-awesome.css"        rel="stylesheet"/>
+		<link href="resources/app-css/dropdown-menu-multi-level.css"    rel="stylesheet"/>
+		<link href="resources/app-css/backgroud.css"                    rel="stylesheet"/>
+		<link href="resources/app-css/reference.css"                    rel="stylesheet"/>
+		<link href="resources/app-css/override.css"                     rel="stylesheet"/>
+		<link href="resources/app-css/app.css"                          rel="stylesheet"/>
+
+		
+		<base href="">
+  	  	
+	</head>
+	
+	<body>
+		<div id="loginModal" class="modal show">
+		  	<div class="modal-dialog login-modal">
+		  	  	<div class="modal-content">
+		  	  	  	<div class="modal-header bg-grey">
+		  	  	  		<img src="/image/logo_small.png"/>
+		  	  	  	  	<button type="button" class="close">x</button>
+		  	  	  	  	<p></p>
+		  	  	  	</div>
+		  	  	  	<div class="modal-body">
+    				  	<div class="row"><!--/row start-->
+    				  		<div class="col-xs-8 col-lg-8">
+    				  			<img src="/image/login_1.jpg" width="80%" height="80%"/>
+    				  		</div>
+    				  		<div class="col-xs-4 col-lg-4">
+    				  			<h3 class="text-center text-primary">Login</h3>	
+    				  			<form id="loginForm" method="post" class="form col-md-12 center-block">
+		  	  	  	    			<div class="form-group">
+		  	  	  	    				<input type="text" class="form-control input-lg" placeholder="User Name" name="userName">
+		  	  	  	   				</div>
+		  	  	  	    			<div class="form-group">
+		  	  	  	    				<input type="password" class="form-control input-lg" placeholder="Password" name="password">
+		  	  	  	    			</div>
+		  	  	  	    			<div class="form-group">
+		  	  	  	    				<button id="loginCommit" class="btn btn-primary btn-lg btn-block">login</button>
+		  	  	  	    			</div>
+		  	  	  	    			<!--
+		  	  	  	    			<div class="form-group">
+		  	  	  	    				<button class="btn btn-primary btn-lg btn-block">立刻登录</button>
+		  	  	  	    				<span><a href="#">找回密码</a></span>
+		  	  	  	    				<span><a href="#" class="pull-right">注册</a></span>
+		  	  	  	   	 			</div>
+		  	  	  	   	 			-->
+		  	  	  	  			</form>
+		  	  	  	  		</div>
+    				  				
+    				  	</div>
+		  	  	  	  	
+		  	  	  	</div>
+		  	  	  	<div class="modal-footer bg-grey">
+		  	  	  	  
+		  	  	  	</div>
+		  	  	</div>
+		  	</div>
+		</div>
+	</body>
+	
+	<style>
+	.login-modal {
+		width: 80%;
+		height: 300px;
+	}
+	@media screen and (min-width: 1300px) {
+ 		.login-modal {
+    		width: 60%;
+    		height: 500px;
+		}
+	}	
+	</style>
+	
+	<script>
+		$(document).ready(
+			function () {
+   				$("#loginCommit").click(
+   					function () {
+       					$('#loginForm').submitForm(
+       						{
+           						url: "/MD/userLogin",
+           						data:$('#loginForm').serialize(),
+           						type:"POST",
+           						callback: function (data) {
+           						    console.log(data);
+           						},
+           						before: function () {
+           						    var errMsg = "";
+           						}
+       						}
+       					).submit();
+    				}
+    			);
+			}
+		)
+	</script>
+
+
+    <!-- 1. Load libraries -->
+     <!-- Polyfill(s) for older browsers -->
+    <script src="node_modules/core-js/client/shim.min.js"></script>
+    <script src="node_modules/zone.js/dist/zone.js"></script>
+    <script src="node_modules/reflect-metadata/Reflect.js"></script>
+    <script src="node_modules/systemjs/dist/system.src.js"></script>
+    <script src="resources/jquery/jquery.min.js"></script>
+	<script src="resources/Bootstrap/js/bootstrap.min.js"></script>
+	<script src="resources/Require.js/require.js" data-main="resources/require-data-main.js"></script>
+</html>

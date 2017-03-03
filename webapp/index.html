@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!-- 在content 中添加 maximum-scale=1, user-scalable=no， 禁止用户缩放-- >
+		<!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+
+		<title>Part Rich Master Data Platform</title>
+		
+		<!-- Bootstrap core CSS -->
+		<link href="resources/Bootstrap/css/bootstrap.css"              rel="stylesheet"/>
+		<link href="resources/Font-Awesome/css/font-awesome.css"        rel="stylesheet"/>
+		<link href="resources/app-css/dropdown-menu-multi-level.css"    rel="stylesheet"/>
+		<link href="resources/app-css/backgroud.css"                    rel="stylesheet"/>
+		<link href="resources/app-css/reference.css"                    rel="stylesheet"/>
+		<link href="resources/app-css/override.css"                     rel="stylesheet"/>
+		<link href="resources/app-css/app.css"                          rel="stylesheet"/>
+
+		
+		<base href="">
+  	  	
+	</head>
+	
+	<body>
+	
+		<app>Loading...</app>
+	
+    	<hr>
+    
+    	<div class="container">
+    		<footer>
+      			<p>&copy; Company 2014</p>
+    		</footer>
+    	</div>
+
+	</body>
+
+
+    <!-- 1. Load libraries -->
+     <!-- Polyfill(s) for older browsers -->
+    <script src="node_modules/core-js/client/shim.min.js"></script>
+    <script src="node_modules/zone.js/dist/zone.js"></script>
+    <script src="node_modules/reflect-metadata/Reflect.js"></script>
+    <script src="node_modules/systemjs/dist/system.src.js"></script>
+    <script src="resources/jquery/jquery.min.js"></script>
+	<script src="resources/Bootstrap/js/bootstrap.min.js"></script>
+	<script src="resources/Require.js/require.js" data-main="resources/require-data-main.js"></script>
+    <!-- 2. Configure SystemJS -->
+    <script src="systemjs.config.js"></script>
+    <script>
+      System.import('app').catch(function(err){ console.error(err); });
+    </script>
+</html>

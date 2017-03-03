@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>  
+    <settings>  
+        <!-- 这个配置使全局的映射器启用或禁用缓存 -->  
+        <setting name="cacheEnabled" value="true" />  
+        <!-- 允许 JDBC 支持生成的键。需要适合的驱动。如果设置为 true 则这个设置强制生成的键被使用，尽管一些驱动拒绝兼容但仍然有效（比如Derby） -->  
+        <setting name="useGeneratedKeys" value="true" />  
+        <!-- 配置默认的执行器。SIMPLE 执行器没有什么特别之处。REUSE 执行器重用预处理语句。BATCH 执行器重用语句和批量更新  -->  
+        <setting name="defaultExecutorType" value="REUSE" />  
+        <!-- 全局启用或禁用延迟加载。当禁用时，所有关联对象都会即时加载。 -->  
+        <setting name="lazyLoadingEnabled" value="false"/>  
+        <!-- 设置超时时间，它决定驱动等待一个数据库响应的时间。  -->  
+        <setting name="defaultStatementTimeout" value="25000"/>   
+    </settings> 
+      
+    <!-- 别名配置。
+    	  在此配置的别名在其他Mapper配置文件中都可以直接使用alias的内容代替后面type那段长长的全路径说明 
+    	 这里的别名配置主要是各个javaBean的别名
+    -->  
+    <typeAliases>  
+    	
+    </typeAliases> 
+ 
+      
+    <!-- 指定映射器路径 -->  
+    <!-- mapper 目录下记录了所有的sql语句的配置, 对应的类似SysUser.xml就是存储了对应于sys_user这张表的sql语句 -->
+    <mappers>  
+    </mappers>  
+</configuration>   
