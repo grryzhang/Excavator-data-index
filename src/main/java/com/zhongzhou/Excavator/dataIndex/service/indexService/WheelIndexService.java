@@ -1,4 +1,4 @@
-package com.zhongzhou.Excavator.dataIndex.indexService;
+package com.zhongzhou.Excavator.dataIndex.service.indexService;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,10 +18,9 @@ import com.zhongzhou.Excavator.dataIndex.DAO.mongo.IndexIntermediateReulstDAO;
 import com.zhongzhou.Excavator.dataIndex.DAO.mongo.MinerTrackDAO;
 import com.zhongzhou.Excavator.dataIndex.DAO.mongo.WheelDAO;
 import com.zhongzhou.Excavator.dataIndex.Exception.DataIndexException;
-import com.zhongzhou.Excavator.dataIndex.filterService.WheelCorpFilterService;
-import com.zhongzhou.Excavator.dataIndex.indexService.indexs.wheel.HubDiameterIndex;
-import com.zhongzhou.Excavator.dataIndex.indexService.indexs.wheel.MaterialIndex;
-import com.zhongzhou.Excavator.dataIndex.indexService.indexs.wheel.PCDIndex;
+import com.zhongzhou.Excavator.dataIndex.service.indexService.indexs.wheel.HubDiameterIndex;
+import com.zhongzhou.Excavator.dataIndex.service.indexService.indexs.wheel.MaterialIndex;
+import com.zhongzhou.Excavator.dataIndex.service.indexService.indexs.wheel.PCDIndex;
 import com.zhongzhou.Excavator.dataIndex.model.WebDataMongoData;
 import com.zhongzhou.Excavator.dataIndex.model.item.wheel.CorporationSearchParameters;
 import com.zhongzhou.Excavator.dataIndex.model.item.wheel.DataIndexedCorporation;
@@ -31,8 +30,10 @@ import com.zhongzhou.Excavator.dataIndex.model.item.wheel.TrackSearchParameters;
 import com.zhongzhou.Excavator.dataIndex.model.item.wheel.WebDataCorporation;
 import com.zhongzhou.Excavator.dataIndex.model.item.wheel.WebDataMinerTrack;
 import com.zhongzhou.Excavator.dataIndex.model.item.wheel.Wheel;
-import com.zhongzhou.Excavator.dataIndex.sortService.sorters.Sorter;
-import com.zhongzhou.Excavator.dataIndex.sortService.sorters.SorterFactory;
+import com.zhongzhou.Excavator.dataIndex.service.filterService.WheelCorpFilterService;
+import com.zhongzhou.Excavator.dataIndex.service.sortService.sorters.Sorter;
+import com.zhongzhou.Excavator.dataIndex.service.sortService.sorters.SorterFactory;
+import com.zhongzhou.Excavator.dataIndex.util.IndexParameter;
 import com.zhongzhou.common.util.BeanUtil;
 
 @Service
@@ -136,9 +137,11 @@ public class WheelIndexService {
 	public List<DataIndexedCorporation> indexSuppliersOfMatchedWheel( final String indexID, final IndexCreateParameters searchParameters ) throws DataIndexException{
 		
 		IndexCreateParameters searchParametersClone = null;
+		String conditionString = null;
 		try{
 			searchParametersClone = BeanUtil.beanCloneByJakson(searchParameters, IndexCreateParameters.class);
-		}catch( IOException e ){
+			conditionString = IndexParameter.indexCreateParameter2String(searchParameters);
+		}catch( IOException | IllegalArgumentException | IllegalAccessException e ){
 			throw new DataIndexException( e );
 		}
 		
@@ -166,6 +169,7 @@ public class WheelIndexService {
 				DataIndexedCorporation onePending =  pendingIndexedCorporations.get(onePendingCorpUrl);
 				if( exist == null ){
 					onePending.setCreateDate( createDate.getTime() );
+					onePending.setIndexCondition( conditionString  );
 					allPendingIndexedCorporations.put( onePendingCorpUrl, onePending);
 				}else{
 					exist.wheelIDs.addAll( onePending.wheelIDs );
@@ -233,45 +237,32 @@ public class WheelIndexService {
 		
 		Map<String,DataIndexedCorporation> dataIndexCorporations = new HashMap<String,DataIndexedCorporation>();
 		
-		List<String> tempWheelUrl = new ArrayList<String>(); 
-		for( Wheel wheel : matchedWheel ){
-			if( wheel != null ){
-				tempWheelUrl.add( wheel.getId() );
-			}
-		}
-		
-		if( tempWheelUrl.size() > 0 ){
-		
-			TrackSearchParameters trackSearchParameters = new TrackSearchParameters();
-			trackSearchParameters.productUrls = tempWheelUrl;
-			trackSearchParameters.dataSourceType = new ArrayList<String>( Arrays.asList("alibaba.wheel.wheelUrl","madeInChina.wheel.wheelUrl") );
-
-			List<WebDataMinerTrack> minerTracks = minerTrackDAO.getWheelDataTrack(trackSearchParameters);
-			for( WebDataMinerTrack data : minerTracks ){
 				
-				if( data != null && data.getData() != null ){
+		if( matchedWheel != null && matchedWheel.size() > 0 ){
+			
+			for( Wheel wheel : matchedWheel ){
+				
+				if( wheel.getCorporationResourceUrl() != null ){
 					
-					DataIndexedCorporation exist = dataIndexCorporations.get( data.getData().getCorporationUrl() );
+					DataIndexedCorporation exist = dataIndexCorporations.get( wheel.getCorporationResourceUrl() );
 					
 					if( exist == null ){
 						
 						DataIndexedCorporation dataIndexCorp = new DataIndexedCorporation();
 						dataIndexCorp.wheelIDs = new ArrayList<String>();
-						dataIndexCorp.corpId = data.getData().getCorporationUrl();
+						dataIndexCorp.corpId = wheel.getCorporationResourceUrl();
 						dataIndexCorp.setIndexId(indexID);
 						//ataIndexCorp.setIndexCondition("test");
 						dataIndexCorp.setDataType( DataIndexedCorporation.type );
 						
-						dataIndexCorporations.put( data.getData().getCorporationUrl(), dataIndexCorp );
+						dataIndexCorporations.put( wheel.getCorporationResourceUrl(), dataIndexCorp );
 					}else{
 						
-						exist.wheelIDs.add( data.getData().getProductUrl() );
+						exist.wheelIDs.add( wheel.getId() );
 					}
 				}
 			}
 		}
-		
-		tempWheelUrl   = null;	
 
 		return dataIndexCorporations;
 	}

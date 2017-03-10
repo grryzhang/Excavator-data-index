@@ -9,8 +9,9 @@ import org.junit.Test;
 import org.springframework.web.context.support.XmlWebApplicationContext;
 
 import com.zhongzhou.Excavator.dataIndex.DAO.mongo.WheelDAO;
-import com.zhongzhou.Excavator.dataIndex.indexService.indexs.wheel.HubDiameterIndex;
-import com.zhongzhou.Excavator.dataIndex.indexService.indexs.wheel.PCDIndex;
+import com.zhongzhou.Excavator.dataIndex.service.indexService.WheelIndexService;
+import com.zhongzhou.Excavator.dataIndex.service.indexService.indexs.wheel.HubDiameterIndex;
+import com.zhongzhou.Excavator.dataIndex.service.indexService.indexs.wheel.PCDIndex;
 import com.zhongzhou.Excavator.dataIndex.model.WebDataMongoData;
 import com.zhongzhou.Excavator.dataIndex.model.item.wheel.IndexCreateParameters;
 import com.zhongzhou.Excavator.dataIndex.model.item.wheel.SourceSearchParameters;
@@ -59,13 +60,20 @@ public class TestWheelIndexService {
 	
 	public void testIndex(){
 		
+		/*
 		List<String> material = 
 			new ArrayList<String>( Arrays.asList("alloy","aluminum") );
 		
 		IndexCreateParameters createParameters = new IndexCreateParameters();
 		createParameters.material = material;
+		*/
 		
-		wheelIndexService.indexSuppliersOfMatchedWheel("wheel-aluminum-index", createParameters);
+		List<String> hubDiameterMatched = new ArrayList<String>( Arrays.asList("17","18") );
+	
+		IndexCreateParameters createParameters = new IndexCreateParameters();
+		createParameters.hubDiameter = hubDiameterMatched;
+		
+		wheelIndexService.indexSuppliersOfMatchedWheel("test 17 18", createParameters);
 	}
 	
 	public void testWheelHubDiameterIndex(){

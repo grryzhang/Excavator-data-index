@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.zhongzhou.Excavator.dataIndex.indexService.WheelIndexService;
+import com.zhongzhou.Excavator.dataIndex.service.indexService.WheelIndexService;
 import com.zhongzhou.Excavator.dataIndex.model.item.wheel.DataIndexedCorporation;
 import com.zhongzhou.Excavator.dataIndex.model.item.wheel.IndexCreateParameters;
 import com.zhongzhou.Excavator.dataIndex.model.item.wheel.Wheel;

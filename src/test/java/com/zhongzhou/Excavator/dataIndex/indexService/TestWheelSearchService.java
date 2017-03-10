@@ -11,6 +11,7 @@ import org.springframework.web.context.support.XmlWebApplicationContext;
 import com.zhongzhou.Excavator.dataIndex.model.item.wheel.Corporation;
 import com.zhongzhou.Excavator.dataIndex.model.item.wheel.DataIndexedCorporation;
 import com.zhongzhou.Excavator.dataIndex.model.item.wheel.IndexCreateParameters;
+import com.zhongzhou.Excavator.dataIndex.service.indexService.WheelIndexService;
 
 public class TestWheelSearchService {
 	

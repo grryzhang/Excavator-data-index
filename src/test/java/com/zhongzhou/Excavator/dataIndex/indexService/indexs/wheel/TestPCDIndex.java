@@ -12,8 +12,9 @@ import org.junit.Test;
 import org.springframework.web.context.support.XmlWebApplicationContext;
 
 import com.zhongzhou.Excavator.dataIndex.DAO.mongo.WheelDAO;
-import com.zhongzhou.Excavator.dataIndex.indexService.indexs.wheel.HubDiameterIndex;
-import com.zhongzhou.Excavator.dataIndex.indexService.indexs.wheel.HubDiameterIndex.WheelHubDiameterParseredData;
+import com.zhongzhou.Excavator.dataIndex.service.indexService.indexs.wheel.HubDiameterIndex;
+import com.zhongzhou.Excavator.dataIndex.service.indexService.indexs.wheel.HubDiameterIndex.WheelHubDiameterParseredData;
+import com.zhongzhou.Excavator.dataIndex.service.indexService.indexs.wheel.PCDIndex;
 import com.zhongzhou.Excavator.dataIndex.model.WebDataMongoData;
 import com.zhongzhou.Excavator.dataIndex.model.item.wheel.SourceSearchParameters;
 import com.zhongzhou.Excavator.dataIndex.model.item.wheel.Wheel;

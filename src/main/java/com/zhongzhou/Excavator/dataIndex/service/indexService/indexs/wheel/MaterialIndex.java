@@ -1,4 +1,4 @@
-package com.zhongzhou.Excavator.dataIndex.indexService.indexs.wheel;
+package com.zhongzhou.Excavator.dataIndex.service.indexService.indexs.wheel;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.zhongzhou.Excavator.dataIndex.DAO.mongo.WheelDAO;
-import com.zhongzhou.Excavator.dataIndex.indexService.indexs.wheel.HubDiameterIndex.WheelHubDiameterParseredData;
+import com.zhongzhou.Excavator.dataIndex.service.indexService.indexs.wheel.HubDiameterIndex.WheelHubDiameterParseredData;
 
 @Service
 public class MaterialIndex {
@@ -19,21 +19,29 @@ public class MaterialIndex {
 	WheelDAO wheelDAO;
 
 	public List<String> getMatchedMaterial( List<String> materialConditions ){
+
+		List<String> matched = new ArrayList<String>();
 		
 		List<String> distinctValue = wheelDAO.getFieldDistinct("data.material");
 		
-		List<String> matched = new ArrayList<String>();
-
-		for( String existedData : distinctValue ){
+		if( materialConditions != null ){
 			
-			for( String condition : materialConditions ){
-			
-				if( this.isMatch(condition, existedData) ){
+			for( String existedData : distinctValue ){
+				
+				for( String condition : materialConditions ){
 					
-					matched.add( existedData );
-				} 
-			}
-		}	
+					if( condition != null && condition.length() > 0 ){
+				
+						if( this.isMatch(condition, existedData) ){
+						
+							matched.add( existedData );
+						} 
+					}
+				}
+			}	
+		}
+
+		
 
 		return matched;
 	}

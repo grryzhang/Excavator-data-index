@@ -1,4 +1,4 @@
-package com.zhongzhou.Excavator.dataIndex.indexService.indexs.wheel;
+package com.zhongzhou.Excavator.dataIndex.service.indexService.indexs.wheel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,35 +21,38 @@ public class HubDiameterIndex {
 
 	public List<String> getMatchedWheelHubDiameter( List<String> conditions ){
 		
-		List<String> distinctValue = wheelDAO.getFieldDistinct("data.wheelHubDiameter");
-		
-		//List<String> distinctValue = new ArrayList<String>( Arrays.asList("12\"-26\"") );
-		
 		List<String> matched = new ArrayList<String>();
 		List<String> notMatch = new ArrayList<String>();
 		
-		List<WheelHubDiameterParseredData> parsedContent = this.parserWheelHubDiameterData( distinctValue );
-		
-		for( String condition : conditions ){
+		if( conditions != null ){
 			
-			for( WheelHubDiameterParseredData parseredData : parsedContent ){
+			List<String> distinctValue = wheelDAO.getFieldDistinct("data.wheelHubDiameter");
+			
+			List<WheelHubDiameterParseredData> parsedContent = this.parserWheelHubDiameterData( distinctValue );
+			
+			for( String condition : conditions ){
 				
-				for( String data : parseredData.parseredData  ){
+				if( condition != null && condition.length() > 0 ){
 					
-					if( data.equals( condition ) ){
+					for( WheelHubDiameterParseredData parseredData : parsedContent ){
 						
-						matched.add( parseredData.originalData );
-						break;
+						for( String data : parseredData.parseredData  ){
+							
+							if( data.equals( condition ) ){
+								
+								matched.add( parseredData.originalData );
+								break;
+							}
+						}  
 					}
-				}  
+				}
 			}
-		}
-		
-		for(String one : distinctValue ){
 			
-			if( !matched.contains( one ) ){
-				notMatch.add( one );
-				//System.out.println(one);
+			for(String one : distinctValue ){
+				
+				if( !matched.contains( one ) ){
+					notMatch.add( one );
+				}
 			}
 		}
 		

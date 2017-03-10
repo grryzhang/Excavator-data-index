@@ -1,4 +1,4 @@
-package com.zhongzhou.Excavator.dataIndex.sortService.sorters;
+package com.zhongzhou.Excavator.dataIndex.service.sortService.sorters;
 
 import java.util.HashMap;
 import java.util.List;

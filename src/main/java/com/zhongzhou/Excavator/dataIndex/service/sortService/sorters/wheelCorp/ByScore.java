@@ -1,4 +1,4 @@
-package com.zhongzhou.Excavator.dataIndex.sortService.sorters.wheelCorp;
+package com.zhongzhou.Excavator.dataIndex.service.sortService.sorters.wheelCorp;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 import com.zhongzhou.Excavator.dataIndex.Exception.DataIndexException;
 import com.zhongzhou.Excavator.dataIndex.model.item.wheel.Corporation;
 import com.zhongzhou.Excavator.dataIndex.model.item.wheel.DataIndexedCorporation;
-import com.zhongzhou.Excavator.dataIndex.sortService.sorters.Sorter;
+import com.zhongzhou.Excavator.dataIndex.service.sortService.sorters.Sorter;
 
 public class ByScore implements Sorter<DataIndexedCorporation> {
 	

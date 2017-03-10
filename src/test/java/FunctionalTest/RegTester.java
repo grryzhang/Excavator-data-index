@@ -19,12 +19,12 @@ public class RegTester{
 	@Test
 	public void testReg(){
 		
-		String source = "2016 2.5 Million";
+		String source = "#Template-List-start( let copindexed as $ )";
 		
 		source = source.replace(",", "");
 		
 		//String regex = "[$](\\d+\\.*\\d*).*[~-]\\W*[$](\\d+\\.*\\d*)+";
-		String regex = "(\\d+\\.*\\d*)\\s*[million|Million|MILLION]";
+		String regex = "\\(\\s*let\\s+\\S+\\s+as\\s+\\$+.*\\)";
 		Pattern reger= Pattern.compile(regex);
 		
 		Matcher m = reger.matcher( source );	

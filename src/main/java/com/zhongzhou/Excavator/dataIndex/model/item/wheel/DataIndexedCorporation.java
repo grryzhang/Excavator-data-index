@@ -20,6 +20,8 @@ public class DataIndexedCorporation implements IndexIntermediateResult<DataIndex
 	
 	public List<String> wheelIDs;
 	
+	public List<Wheel> wheels;
+	
 	public Map<String, Double> scorExplain;
 	
 	private String indexId;

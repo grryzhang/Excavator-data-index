@@ -1,4 +1,4 @@
-package com.zhongzhou.Excavator.dataIndex.filterService.filters;
+package com.zhongzhou.Excavator.dataIndex.service.filterService.filters;
 
 import java.util.List;
 

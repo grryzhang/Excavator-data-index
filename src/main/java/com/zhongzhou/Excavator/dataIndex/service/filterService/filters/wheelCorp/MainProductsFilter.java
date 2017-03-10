@@ -1,11 +1,11 @@
-package com.zhongzhou.Excavator.dataIndex.filterService.filters.wheelCorp;
+package com.zhongzhou.Excavator.dataIndex.service.filterService.filters.wheelCorp;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 import com.zhongzhou.Excavator.dataIndex.Exception.DataIndexException;
-import com.zhongzhou.Excavator.dataIndex.filterService.filters.Filter;
+import com.zhongzhou.Excavator.dataIndex.service.filterService.filters.Filter;
 import com.zhongzhou.Excavator.dataIndex.model.item.wheel.Corporation;
 import com.zhongzhou.Excavator.dataIndex.model.item.wheel.DataIndexedCorporation;
 import com.zhongzhou.common.util.BeanUtil;

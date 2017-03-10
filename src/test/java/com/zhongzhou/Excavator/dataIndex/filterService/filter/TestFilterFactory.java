@@ -5,8 +5,8 @@ import org.junit.Test;
 import org.springframework.web.context.support.XmlWebApplicationContext;
 
 import com.zhongzhou.Excavator.dataIndex.DAO.mongo.WheelDAO;
-import com.zhongzhou.Excavator.dataIndex.filterService.filters.Filter;
-import com.zhongzhou.Excavator.dataIndex.filterService.filters.FilterFactory;
+import com.zhongzhou.Excavator.dataIndex.service.filterService.filters.Filter;
+import com.zhongzhou.Excavator.dataIndex.service.filterService.filters.FilterFactory;
 import com.zhongzhou.Excavator.dataIndex.model.item.wheel.Corporation;
 
 public class TestFilterFactory {

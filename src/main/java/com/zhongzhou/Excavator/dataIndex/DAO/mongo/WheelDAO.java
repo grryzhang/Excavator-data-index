@@ -12,6 +12,7 @@ import com.zhongzhou.Excavator.dataIndex.model.WebDataMongoData;
 import com.zhongzhou.Excavator.dataIndex.model.item.wheel.SourceSearchParameters;
 import com.zhongzhou.Excavator.dataIndex.model.item.wheel.WebDataWheel;
 import com.zhongzhou.Excavator.dataIndex.model.item.wheel.Wheel;
+import com.zhongzhou.Excavator.dataIndex.model.item.wheel.WheelSearchParameters;
 import com.zhongzhou.Excavator.springsupport.injectlist.DataSourceList;
 
 @Component
@@ -54,7 +55,23 @@ public class WheelDAO {
 			query.retrievedFields( false, excludeFields );
 		}
 		if( includeFields != null ){
-			query.retrievedFields( true, excludeFields );
+			query.retrievedFields( true, includeFields );
+		}
+		
+		List< WebDataMongoData<Wheel> > result = query.asList();
+		
+		return result;
+	}
+	
+	public List< WebDataMongoData<Wheel> > getWheelData( WheelSearchParameters searchParameters , String[] excludeFields, String [] includeFields ){
+		
+		Query query = this.prepareQuery(searchParameters);
+		
+		if( excludeFields != null ){
+			query.retrievedFields( false, excludeFields );
+		}
+		if( includeFields != null ){
+			query.retrievedFields( true, includeFields );
 		}
 		
 		List< WebDataMongoData<Wheel> > result = query.asList();
@@ -68,21 +85,39 @@ public class WheelDAO {
 				.createQuery((new WebDataWheel()).getClass())
 				.disableValidation();
 		
-		if( searchParameters.wheelHubDiameter != null ){
+		if( searchParameters.wheelHubDiameter != null &&  searchParameters.wheelHubDiameter.size() > 0 ){
 			
 			query.field("data.wheelHubDiameter").in( searchParameters.wheelHubDiameter );
 		}
 		
-		if( searchParameters.wheelPCD != null ){
+		if( searchParameters.wheelPCD != null &&  searchParameters.wheelPCD.size() > 0 ){
 			
 			query.field("data.pcd").in( searchParameters.wheelPCD );
 		}
 		
-		if( searchParameters.material != null ){
+		if( searchParameters.material != null &&  searchParameters.material.size() > 0 ){
 			
 			query.field("data.material").in( searchParameters.material );
 		}
 		
+		
+		if( searchParameters.limit > 0 && searchParameters.start >= 0 ){
+			query.offset( searchParameters.start ).limit( searchParameters.limit );
+		}
+		
+		return query;
+	}
+	
+	private Query prepareQuery( WheelSearchParameters searchParameters ){
+		
+		Query query = mongoMorphiaDataStore
+				.createQuery((new WebDataWheel()).getClass())
+				.disableValidation();
+		
+		if( searchParameters.wheelIds != null ){
+			
+			query.field("data.id").in( searchParameters.wheelIds );
+		}
 		
 		if( searchParameters.limit > 0 && searchParameters.start >= 0 ){
 			query.offset( searchParameters.start ).limit( searchParameters.limit );

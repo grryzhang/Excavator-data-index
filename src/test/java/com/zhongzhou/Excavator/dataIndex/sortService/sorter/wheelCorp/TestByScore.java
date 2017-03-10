@@ -16,8 +16,8 @@ import com.zhongzhou.Excavator.dataIndex.model.item.wheel.DataIndexedCorporation
 import com.zhongzhou.Excavator.dataIndex.model.item.wheel.TrackSearchParameters;
 import com.zhongzhou.Excavator.dataIndex.model.item.wheel.WebDataCorporation;
 import com.zhongzhou.Excavator.dataIndex.model.item.wheel.WebDataMinerTrack;
-import com.zhongzhou.Excavator.dataIndex.sortService.sorters.Sorter;
-import com.zhongzhou.Excavator.dataIndex.sortService.sorters.SorterFactory;
+import com.zhongzhou.Excavator.dataIndex.service.sortService.sorters.Sorter;
+import com.zhongzhou.Excavator.dataIndex.service.sortService.sorters.SorterFactory;
 
 public class TestByScore {
 
