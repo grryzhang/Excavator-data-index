@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import org.springframework.http.converter.xml.SourceHttpMessageConverter;
+
 import com.zhongzhou.Excavator.dataIndex.Exception.DataIndexException;
 import com.zhongzhou.Excavator.dataIndex.service.filterService.filters.Filter;
 import com.zhongzhou.Excavator.dataIndex.model.item.wheel.Corporation;
@@ -20,7 +22,7 @@ public class MainProductsFilter implements Filter<DataIndexedCorporation> {
 		String mainProductsFilter = ""
 				+ "[\"Alloy wheel\",\"Steel wheel\",\"steel rim\",\"wire wheel\",\"trailer wheel\","
 				+ "\"steel wheel rims\",\"trailer wheel rims\",\"wheel/rim\",\"Forklift Wheel\",\"Tubeless Wheel\", "
-				+ "\"Tractor Wheel\",\"Wheel Rim\",\"Wheel Hub\",\"Automobile Wheel Hub\"]";
+				+ "\"Tractor Wheel\",\"Wheel Rim\",\"aluminum alloy vehicle wheels\"]";
 		
 		try{
 			List<String> mainProductsFilters = BeanUtil.beanJaksonUnSerializer( mainProductsFilter.getBytes(), List.class );

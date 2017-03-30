@@ -29,7 +29,7 @@ import com.zhongzhou.Excavator.springsupport.injectlist.ServiceNameList;
 import com.zhongzhou.common.model.web.JsonResponse;
 
 @Controller
-public class ItemController {
+public class IndexController {
 	
 	@Autowired
 	public WheelIndexService wheelSearchService;

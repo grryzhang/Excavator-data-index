@@ -14,23 +14,28 @@ import org.junit.Test;
 
 import com.zhongzhou.Excavator.dataIndex.model.WebDataMongoData;
 
+import junit.framework.Assert;
+
 public class RegTester{
 	
 	@Test
 	public void testReg(){
 		
-		String source = "#Template-List-start( let copindexed as $ )";
-		
-		source = source.replace(",", "");
+		String sources [] = { "test", "testjpg" , "test.jpg" } ;
 		
 		//String regex = "[$](\\d+\\.*\\d*).*[~-]\\W*[$](\\d+\\.*\\d*)+";
-		String regex = "\\(\\s*let\\s+\\S+\\s+as\\s+\\$+.*\\)";
+		String regex = "^(?!.*?\\.jpg).*$";
 		Pattern reger= Pattern.compile(regex);
 		
-		Matcher m = reger.matcher( source );	
-		while(m.find()){
+		for( String source : sources ){
 			
-			System.out.println( m.group() );
+			source = source.replace(",", "");
+			Matcher m = reger.matcher( source );	
+			String test = null;
+			while(m.find()){
+				test = m.group();
+				System.out.println( m.group() );
+			}
 		}
 	}
 }

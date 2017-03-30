@@ -20,7 +20,7 @@ public class Corporation {
 	/**数据原始网站*/
 	private String dataSource;
 	/**图片id*/
-	private String imageId;
+	private List<String> imageId;
 	/**网页资源id*/
 	private String pageId;
 
@@ -112,6 +112,11 @@ public class Corporation {
 	private String highestEverAnnualOutput;
 	/**上市公司代码*/
 	private String listedCompanyCode;
+	
+	private String cooperator;
+	
+	private String recommended;
+	
 	public Corporation() {
 		insertTime = new Date().getTime();
 	}
@@ -156,11 +161,11 @@ public class Corporation {
 		this.index = index;
 	}
 
-	public String getImageId() {
+	public List<String> getImageId() {
 		return imageId;
 	}
 
-	public void setImageId(String imageId) {
+	public void setImageId(List<String> imageId) {
 		this.imageId = imageId;
 	}
 
@@ -516,54 +521,19 @@ public class Corporation {
 		this.listedCompanyCode = listedCompanyCode;
 	}
 
-	@Override
-	public String toString() {
-		return "Corporation{" +
-				"id='" + id + '\'' +
-				", parentId='" + parentId + '\'' +
-				", imageId='" + imageId + '\'' +
-				", pageId='" + pageId + '\'' +
-				", modelClassName='" + modelClassName + '\'' +
-				", modelClazz=" + modelClass +
-				", name='" + name + '\'' +
-				", img=" + Arrays.toString(img) +
-				", address='" + address + '\'' +
-				", factoryAddress='" + factoryAddress + '\'' +
-				", contact='" + contact + '\'' +
-				", fax='" + fax + '\'' +
-				", telePhone='" + telePhone + '\'' +
-				", mainProducts='" + mainProducts + '\'' +
-				", resourceUrl='" + resourceUrl + '\'' +
-				", businessType='" + businessType + '\'' +
-				", businessRange='" + businessRange + '\'' +
-				", registeredCapital='" + registeredCapital + '\'' +
-				", managementSystemCertification='" + managementSystemCertification + '\'' +
-				", termsOfPayment='" + termsOfPayment + '\'' +
-				", oemOrOdmAvailability='" + oemOrOdmAvailability + '\'' +
-				", introduction='" + introduction + '\'' +
-				", internationalCommercialTerms='" + internationalCommercialTerms + '\'' +
-				", averageLeadTime='" + averageLeadTime + '\'' +
-				", numberofForeignTradingStaff='" + numberofForeignTradingStaff + '\'' +
-				", exportYear='" + exportYear + '\'' +
-				", exportPercentage='" + exportPercentage + '\'' +
-				", mainMarkets='" + mainMarkets + '\'' +
-				", nearestPort='" + nearestPort + '\'' +
-				", importExportMode='" + importExportMode + '\'' +
-				", annualExportRevenue='" + annualExportRevenue + '\'' +
-				", rAndDCapacity='" + rAndDCapacity + '\'' +
-				", noOfRAndDStaff='" + noOfRAndDStaff + '\'' +
-				", noOfProductionLines='" + noOfProductionLines + '\'' +
-				", annualOutputValue='" + annualOutputValue + '\'' +
-				", otherDesciption='" + otherDesciption + '\'' +
-				", goldMember='" + goldMember + '\'' +
-				", tradeShows=" + tradeShows +
-				", dataSource=" + dataSource +
-				", factorySize='" + factorySize + '\'' +
-				", yearEstablished='" + yearEstablished + '\'' +
-				", totalEmployees='" + totalEmployees + '\'' +
-				", certifications=" + certifications +
-				", acceptedPaymentCurrency='" + acceptedPaymentCurrency + '\'' +
-				", highestEverAnnualOutput='" + highestEverAnnualOutput + '\'' +
-				'}';
+	public String getCooperator() {
+		return cooperator;
+	}
+
+	public void setCooperator(String cooperator) {
+		this.cooperator = cooperator;
+	}
+
+	public String getRecommended() {
+		return recommended;
+	}
+
+	public void setRecommended(String recommended) {
+		this.recommended = recommended;
 	}
 }

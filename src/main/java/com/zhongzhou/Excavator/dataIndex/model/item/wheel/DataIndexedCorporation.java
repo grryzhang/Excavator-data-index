@@ -1,5 +1,6 @@
 package com.zhongzhou.Excavator.dataIndex.model.item.wheel;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -14,7 +15,7 @@ public class DataIndexedCorporation implements IndexIntermediateResult<DataIndex
 	
 	public String corpId; // suggest to be it's URL
 
-	public Double corpScore;
+	private Double corpScore;
 	
 	public Corporation corp;
 	
@@ -31,6 +32,15 @@ public class DataIndexedCorporation implements IndexIntermediateResult<DataIndex
 	private String dataType;
 	
 	private long createDate;
+
+	public Double getCorpScore() {
+		return corpScore;
+	}
+
+	public void setCorpScore(Double corpScore) {
+		BigDecimal b = new BigDecimal( corpScore );
+		this.corpScore = b.setScale( 2, BigDecimal.ROUND_HALF_UP ).doubleValue();
+	}
 
 	public String getIndexId() {
 		return indexId;

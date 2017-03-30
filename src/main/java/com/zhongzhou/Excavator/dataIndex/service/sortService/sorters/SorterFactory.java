@@ -20,7 +20,7 @@ public class SorterFactory {
 	
 	public SorterFactory(){
 		
-		sorterMapper.put( "wheel.corp.sort.byDefaultGrade", "com.zhongzhou.Excavator.dataIndex.sortService.sorters.wheelCorp.ByScore");
+		sorterMapper.put( "wheel.corp.sort.byDefaultGrade", "com.zhongzhou.Excavator.dataIndex.service.sortService.sorters.wheelCorp.ByScore");
 	}
 
 	public <T> Sorter<T> getSorter( String sorterName ) throws DataIndexException{

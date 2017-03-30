@@ -1,5 +1,6 @@
 package com.zhongzhou.Excavator.dataIndex.service.indexService.indexs.wheel;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -10,8 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.zhongzhou.Excavator.dataIndex.DAO.mongo.WheelDAO;
-import com.zhongzhou.Excavator.dataIndex.service.indexService.indexs.wheel.HubDiameterIndex.WheelHubDiameterParseredData;
-
 @Service
 public class PCDIndex {
 	
@@ -19,9 +18,7 @@ public class PCDIndex {
 	WheelDAO wheelDAO;
 
 	public List<String> getMatchedPCD( List<String> conditions ){
-		
-		
-		
+
 		List<String> matched = new ArrayList<String>();
 		List<String> notMatch = new ArrayList<String>();
 		
@@ -29,17 +26,16 @@ public class PCDIndex {
 			
 			List<String> distinctValue = wheelDAO.getFieldDistinct("data.pcd");
 			
-			for( String condition : conditions ){
+			List<PCDParseredData> parsedContent     = this.parserPendingCompareData( distinctValue );
+			List<Condition>       parsedConditions  = this.parserCondition(conditions);
+			
+			for( PCDParseredData parseredData : parsedContent ){
 				
-				if( condition != null && condition.length() > 0 ){
-					for( String existedData : distinctValue ){
-						
-						if( this.isMatch(condition, existedData) ){
-								
-							matched.add( existedData );
-						} 
-					}
-				}
+				if( this.isMatch(parsedConditions, parseredData ) ){
+					
+					matched.add( parseredData.originalData );
+					continue;
+				}  		
 			}
 		}
 		/*
@@ -55,81 +51,187 @@ public class PCDIndex {
 		return matched;
 	}
 	
-	private boolean isMatch( String pendingCompare , String existedData  ){
+	//compare, compare if item's hubDiameterData is match the input condition
+	private boolean isMatch( List<Condition> conditions , PCDParseredData parsedData ){
+		
+		if( parsedData != null &&  parsedData.parseredData != null ){
+			
+			for( Condition condition : conditions ){
+				
+				if( condition!= null && condition.start != null && condition.end != null ){
+					
+					for( ParseredData parseredData : parsedData.parseredData ){
+						
+						if( parseredData != null && parseredData.start != null && parseredData.end != null ){
+							
+							if( condition.start.compareTo( parseredData.end ) <= 0 && condition.end.compareTo( parseredData.start ) >=0 ){
+								return true;
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		return false;
+	}	
+	
+	private List<Condition> parserCondition( List<String> conditions ){
+		
+		List<Condition> parseredConditions = new ArrayList<Condition>();
+		
+		String regex = "(\\d+\\.*\\d*)+";
+		Pattern number= Pattern.compile(regex);
+		
+		regex = "(\\d+\\.*\\d*)+\\W*[~-]\\W*(\\d+\\.*\\d*)+";
+		Pattern between= Pattern.compile(regex);
+		
+		for( String condition : conditions ){
+			
+			StringBuffer temp = new StringBuffer( condition );
+			
+			Matcher m = between.matcher( condition );
+			while ( m.find() ) {
+					
+				Matcher m1 = Pattern.compile("(\\d+\\.*\\d*)+").matcher( m.group() );
+				
+				int count = 0 ;
+				BigDecimal first  = null ;
+				BigDecimal second = null ;
+				while( m1.find() ){
+					if( count == 0 ) first  = new BigDecimal( m1.group() );
+					if( count == 1 ) second = new BigDecimal( m1.group() );
+					count++;
+				};
+				if( count == 2 && first != null && second != null ){
+					
+					if( first.compareTo( second ) > 0 ){ BigDecimal third = first; first = second; second = third; };
+				}
+				Condition oneParseredCondition = new Condition();
+				oneParseredCondition.start = first;
+				oneParseredCondition.end   = second;
+				parseredConditions.add( oneParseredCondition );
+				temp = temp.replace( m.start(), m.end() , " " );
+				m = between.matcher( temp ); // temp has changed, match again
+			}
+			
+			m = number.matcher( temp.toString() );	
+			while ( m.find() ) {
+				BigDecimal first = new BigDecimal( m.group() );
+				Condition oneParseredCondition = new Condition();
+				oneParseredCondition.start = first;
+				oneParseredCondition.end   = first;
+				parseredConditions.add( oneParseredCondition );
+			}			
+		}
+		
+		return parseredConditions;
+	}
+	
+	private List<PCDParseredData> parserPendingCompareData( List<String> pendingCompare  ){
+		
+		List<PCDParseredData> parsedContent = new ArrayList<PCDParseredData>();
 		
 		//numberReg = "(\\d+\\.*\\d*)";
 		
-		double pendingCompareDouble = Double.parseDouble( pendingCompare );
 		boolean matched = true;
 		
 		// parser content like 12
 		String regex = "(\\d+\\.*\\d*)+";
 		Pattern number= Pattern.compile(regex);
 		// has x
-		regex = "(\\d+\\.*\\d*)+\\s*[RXx\\*]\\s*(\\d+\\.*\\d*)+";
+		regex = "(\\d+\\.*\\d*)+\\s*[RXx×\\*]\\s*(\\d+\\.*\\d*)+";
 		Pattern hasX= Pattern.compile(regex);
 		// parser content like 12-13, 12~13, 12/13
 		regex = "(\\d+\\.*\\d*)+\\W*[~-]\\W*(\\d+\\.*\\d*)+";
 		Pattern between= Pattern.compile(regex);
 		
-		StringBuffer temp = new StringBuffer( existedData );
-		
-		// replace like 18X2 to 18, 2X19 to 19
-		Matcher m = hasX.matcher( temp );
-		while( m.find() ){
+		for( String value : pendingCompare ){
 			
-			Matcher m1 = Pattern.compile("(\\d+\\.*\\d*)+").matcher( m.group() );
+			PCDParseredData parseredDataObj = new PCDParseredData();
+			parseredDataObj.parseredData = new ArrayList<ParseredData>();
+			parseredDataObj.originalData = value;
+			parsedContent.add( parseredDataObj );
 			
-			int count = 0 ;
-			double first  = 0 ;
-			double second = 0 ;
-			while( m1.find() ){
-				if( count == 0 ) first  = Double.valueOf( m1.group() ).doubleValue();
-				if( count == 1 ) second = Double.valueOf( m1.group() ).doubleValue();
-				count++;
-			};
-			if( count == 2 && first != 0 ){
+			StringBuffer temp = new StringBuffer( value );
+			
+			// replace like 18X2 to 18, 2X19 to 19
+			Matcher m = hasX.matcher( temp );
+			while( m.find() ){
 				
-				if( first > second ){ double third = first; first = second; second = third; };
-			}
-			temp = temp.replace( m.start(), m.end() , String.valueOf( second ) );
-			m = hasX.matcher( temp );
-		}	
-			
-		temp = new StringBuffer( temp.toString().replaceAll("[A-Za-z]", " ") );
-			
-		//between compare
-		m = between.matcher( temp.toString() );	
-		while ( m.find() ) {
+				Matcher m1 = Pattern.compile("(\\d+\\.*\\d*)+").matcher( m.group() );
 				
-			Matcher m1 = Pattern.compile("(\\d+\\.*\\d*)+").matcher( m.group() );
-			
-			int count = 0 ;
-			double first  = 0 ;
-			double second = 0 ;
-			while( m1.find() ){
-				if( count == 0 ) first  = Double.valueOf( m1.group() ).doubleValue();
-				if( count == 1 ) second = Double.valueOf( m1.group() ).doubleValue();
-				count++;
-			};
-			if( count == 2 && first != 0 ){
-				
-				if( first > second ){ double third = first; first = second; second = third; };
-				
-				if( Double.compare( pendingCompareDouble ,  first ) > 0 &&  Double.compare( pendingCompareDouble ,  second ) < 0  ){
-					return matched;
+				int count = 0 ;
+				double first  = 0 ;
+				double second = 0 ;
+				while( m1.find() ){
+					if( count == 0 ) first  = Double.valueOf( m1.group() ).doubleValue();
+					if( count == 1 ) second = Double.valueOf( m1.group() ).doubleValue();
+					count++;
+				};
+				if( count == 2 && first != 0 ){
+					
+					if( first > second ){ double third = first; first = second; second = third; };
 				}
+				temp = temp.replace( m.start(), m.end() , String.valueOf( second ) );
+				m = hasX.matcher( temp );
+			}	
+			
+			temp = new StringBuffer( temp.toString().replaceAll("[A-Za-z]", " ") );
+			
+			//between parser
+			m = between.matcher( temp.toString() );	
+			while ( m.find() ) {
+					
+				Matcher m1 = Pattern.compile("(\\d+\\.*\\d*)+").matcher( m.group() );
+				
+				int count = 0 ;
+				BigDecimal first  = null ;
+				BigDecimal second = null ;
+				while( m1.find() ){
+					if( count == 0 ) first  = new BigDecimal( m1.group() );
+					if( count == 1 ) second = new BigDecimal( m1.group() );
+					count++;
+				};
+				if( count == 2 && first != null && second != null ){
+					
+					if( first.compareTo( second ) > 0 ){ BigDecimal third = first; first = second; second = third; };
+				}
+				ParseredData oneParseredData = new ParseredData();
+				oneParseredData.start = first;
+				oneParseredData.end = second;
+				parseredDataObj.parseredData.add( oneParseredData );
+				temp = temp.replace( m.start(), m.end() , " " );
+				m = between.matcher( temp ); // temp has changed, match again
 			}
-		}	
-		//
-		m = number.matcher( temp.toString() );	
-		while ( m.find() ) {
-			Double oneExisted =  Double.parseDouble( m.group() );
-			if( Double.compare( pendingCompareDouble ,  oneExisted ) == 0 ){
-				return matched;
-			}
+				
+			// parse the rest number
+			m = number.matcher( temp.toString() );	
+			while ( m.find() ) {
+				BigDecimal first = new BigDecimal( m.group() );
+				ParseredData oneParseredData = new ParseredData();
+				oneParseredData.start = first;
+				oneParseredData.end = first;
+				parseredDataObj.parseredData.add( oneParseredData );
+			}	
 		}
+
+		return parsedContent;
+	}
+	
+	private class Condition{
 		
-		return false;
+		public BigDecimal start;
+		public BigDecimal end;
+	}
+	
+	private class ParseredData{
+		public BigDecimal start;
+		public BigDecimal end;
+	}
+	
+	private class PCDParseredData {
+		public String originalData;
+		public List<ParseredData> parseredData ;
 	}
 }

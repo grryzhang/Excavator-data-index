@@ -27,11 +27,8 @@ public class CorporationDAO {
 				.createQuery((new WebDataCorporation()).getClass())
 				.disableValidation();
 		
-		if( searchParameters.resourceUrls != null ){
-			
-			query.field("data.id").in( searchParameters.resourceUrls );
-		}
-		
+		this.prepareQuery(query, searchParameters);
+
 		if( searchParameters.limit > 0 && searchParameters.start >= 0 ){
 			query.offset( searchParameters.start ).limit( searchParameters.limit );
 		}
@@ -39,5 +36,15 @@ public class CorporationDAO {
 		List< WebDataCorporation > result = query.asList();
 		
 		return result;
+	}
+	
+	private void prepareQuery( Query query , CorporationSearchParameters searchParameters ){
+		
+		if( searchParameters.resourceUrls != null ){
+			
+			query.field("data.id").in( searchParameters.resourceUrls );
+		}
+		
+		query.field("active").notEqual( false );
 	}
 }

@@ -20,7 +20,8 @@ public class FilterFactory {
 	
 	public FilterFactory(){
 		
-		filterMapper.put( "wheel.corp.mainProduct", "com.zhongzhou.Excavator.dataIndex.filterService.filters.wheelCorp.MainProductsFilter");
+		filterMapper.put( "wheel.corp.mainProduct" , "com.zhongzhou.Excavator.dataIndex.service.filterService.filters.wheelCorp.MainProductsFilter");
+		filterMapper.put( "wheel.corp.businessType", "com.zhongzhou.Excavator.dataIndex.service.filterService.filters.wheelCorp.BusinessTypeFilter");
 	}
 
 	public <T> Filter<T> getFilter( String filterName ) throws DataIndexException{

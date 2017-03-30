@@ -27,7 +27,7 @@ public class ByScore implements Sorter<DataIndexedCorporation> {
 			
 			for( DataIndexedCorporation source : sources ){
 				
-				source.corpScore = this.calculateScore( source );
+				source.setCorpScore ( this.calculateScore( source ) );
 				
 				sortResult.add( source );
 			}
@@ -36,7 +36,7 @@ public class ByScore implements Sorter<DataIndexedCorporation> {
 
 				@Override
 				public int compare(DataIndexedCorporation o1, DataIndexedCorporation o2) {
-			        return (o1.corpScore).compareTo(o2.corpScore);
+			        return ( o1.getCorpScore() ).compareTo( o2.getCorpScore() );
 				}
 			}); 
 			Collections.reverse( sortResult );
@@ -172,59 +172,63 @@ public class ByScore implements Sorter<DataIndexedCorporation> {
 		
 		double annualOutput = 0;
 			
-		if( annualOutputValue.toLowerCase(Locale.ENGLISH).contains("usd") || annualOutputValue.contains("$") ) {
-
-			if( annualOutput == 0 ){
-				String regex = "\\s*(\\d+\\.*\\d*)[A-Za-z\\s]*[~-][A-Za-z\\s]*\\s*(\\d+\\.*\\d*)+";
-				Pattern between= Pattern.compile(regex);
-				Matcher m = between.matcher( annualOutputValue );	
-				
-				if( m.find() ) {
-						
-					Matcher m1 = Pattern.compile("(\\d+\\.*\\d*)+").matcher( m.group() );
-					
-					m1.find();
-					double first  = Double.valueOf( m1.group() );
-					m1.find();
-					double second = Double.valueOf( m1.group() );
-
-					annualOutput = ( first + second ) / 2;
-				}
-			}
+		if( annualOutput == 0 ){
+			String regex = "\\s*(\\d+\\.*\\d*)[A-Za-z\\s]*[~-][A-Za-z\\s]*\\s*(\\d+\\.*\\d*)+";
+			Pattern between= Pattern.compile(regex);
+			Matcher m = between.matcher( annualOutputValue );	
 			
-			if( annualOutput == 0 ){
+			if( m.find() ) {
+					
+				Matcher m1 = Pattern.compile("(\\d+\\.*\\d*)+").matcher( m.group() );
 				
-				String regex = "(\\d+\\.*\\d*)\\s*[million|Million|MILLION]";
-				Pattern dollar = Pattern.compile(regex);
-				Matcher m = dollar.matcher( annualOutputValue );	
-				
-				if( m.find() ){
-					
-					Matcher m1 = Pattern.compile("(\\d+\\.*\\d*)+").matcher( m.group() );
-					
-					m1.find();
-					annualOutput  = Double.valueOf( m1.group() );
-				}
-			}
-			
-			if( annualOutput == 0 ){
-	
-				Matcher m = Pattern.compile("(\\d+\\.*\\d*)+").matcher( annualOutputValue );
-					
-				while( m.find() ){
-					
-					double value =  Double.valueOf( m.group() );
-					if( value > annualOutput ){
-						annualOutput = value;
-					}
-				}
+				m1.find();
+				double first  = Double.valueOf( m1.group() );
+				m1.find();
+				double second = Double.valueOf( m1.group() );
+
+				annualOutput = ( first + second ) / 2;
 			}
 		}
 		
+		if( annualOutput == 0 ){
+			
+			String regex = "(\\d+\\.*\\d*)\\s*[million|Million|MILLION]";
+			Pattern dollar = Pattern.compile(regex);
+			Matcher m = dollar.matcher( annualOutputValue );	
+			
+			if( m.find() ){
+				
+				Matcher m1 = Pattern.compile("(\\d+\\.*\\d*)+").matcher( m.group() );
+				
+				m1.find();
+				annualOutput  = Double.valueOf( m1.group() );
+			}
+		}
+		
+		if( annualOutput == 0 ){
+
+			Matcher m = Pattern.compile("(\\d+\\.*\\d*)+").matcher( annualOutputValue );
+				
+			while( m.find() ){
+				
+				double value =  Double.valueOf( m.group() );
+				if( value > annualOutput ){
+					annualOutput = value;
+				}
+			}
+		}
+			
 		if( annualOutputValue.toLowerCase(Locale.ENGLISH).contains("million") ){
 			annualOutput = annualOutput * 1000000;
+		}else if( annualOutputValue.toLowerCase(Locale.ENGLISH).contains("billion") ){
+			annualOutput = annualOutput * 1000000000;
+		}else if( annualOutputValue.toLowerCase(Locale.ENGLISH).contains("thousand") ){
+			annualOutput = annualOutput * 1000;
 		}
 		
+		if( annualOutputValue.toLowerCase(Locale.ENGLISH).contains("rmb") || annualOutputValue.contains("¥") ) {
+			annualOutput = annualOutput / 7;
+		}
 		
 		if( annualOutput < 10000000 ){
 			return 0.1;
@@ -251,14 +255,21 @@ public class ByScore implements Sorter<DataIndexedCorporation> {
 			if( m.find() ) {
 					
 				highestEverAnnualOutput  = Double.valueOf( m.group() );
-				
-				if( highestEverAnnualOutputString.contains("万") ){
-					highestEverAnnualOutput = highestEverAnnualOutput * 10000;
-				}
-				if( highestEverAnnualOutputString.contains("月") ){
-					highestEverAnnualOutput = highestEverAnnualOutput * 12;
-				}
 			}
+		}
+		
+		String  lowerCaseString = highestEverAnnualOutputString.toLowerCase(Locale.ENGLISH);
+		if( lowerCaseString.contains("million") ){
+			highestEverAnnualOutput = highestEverAnnualOutput * 1000000;
+		}else if( lowerCaseString.contains("billion") ){
+			highestEverAnnualOutput = highestEverAnnualOutput * 1000000000;
+		}else if( lowerCaseString.contains("thousand") ){
+			highestEverAnnualOutput = highestEverAnnualOutput * 1000;
+		}else if( lowerCaseString.contains("万") ){
+			highestEverAnnualOutput = highestEverAnnualOutput * 10000;
+		}
+		if( highestEverAnnualOutputString.contains("月") ){
+			highestEverAnnualOutput = highestEverAnnualOutput * 12;
 		}
 		
 		if( highestEverAnnualOutput < 1000000 ){

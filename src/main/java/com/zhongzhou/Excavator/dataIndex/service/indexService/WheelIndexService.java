@@ -154,7 +154,7 @@ public class WheelIndexService {
 		int processed = 0;
 		while( processed <= count ){
 			
-			System.out.println("Processed:" + processed );
+			System.out.println("Processed:" + processed + " to " + (processed + preProcess) );
 			
 			searchParametersClone.start = processed ;
 			searchParametersClone.limit = preProcess; 
@@ -205,7 +205,7 @@ public class WheelIndexService {
 		}
 		
 		List<DataIndexedCorporation> dataIndexCorporations = new ArrayList<DataIndexedCorporation>( allPendingIndexedCorporations.values() );
-		
+			
 		dataIndexCorporations = wheelCorpFilterService.defaultWheelCorpFilter( dataIndexCorporations );
 		
 		Sorter<DataIndexedCorporation> sorter = sorterFactory.getSorter("wheel.corp.sort.byDefaultGrade");
@@ -256,10 +256,11 @@ public class WheelIndexService {
 						dataIndexCorp.setDataType( DataIndexedCorporation.type );
 						
 						dataIndexCorporations.put( wheel.getCorporationResourceUrl(), dataIndexCorp );
-					}else{
 						
-						exist.wheelIDs.add( wheel.getId() );
+						exist = dataIndexCorp;
 					}
+					
+					exist.wheelIDs.add( wheel.getId() );
 				}
 			}
 		}

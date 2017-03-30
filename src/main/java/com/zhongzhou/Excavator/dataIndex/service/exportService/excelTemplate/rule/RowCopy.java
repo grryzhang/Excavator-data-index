@@ -63,6 +63,8 @@ public class RowCopy implements ExcelTemplateRule{
 						
 						if( value != null ){
 							cell.setCellValue( value.toString() );
+						}else{
+							cell.setCellValue( "" );
 						}
 					} catch (NoSuchFieldException | SecurityException | IllegalArgumentException| IllegalAccessException e) {
 						throw new ExportTemplateException(e);

@@ -1,22 +1,28 @@
 package com.zhongzhou.Excavator.dataIndex.service.exportService;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import com.zhongzhou.Excavator.dataIndex.DAO.mongo.IndexIntermediateReulstDAO;
 import com.zhongzhou.Excavator.dataIndex.DAO.mongo.WheelDAO;
 import com.zhongzhou.Excavator.dataIndex.Exception.DataIndexException;
+import com.zhongzhou.Excavator.dataIndex.Exception.ExportTemplateException;
 import com.zhongzhou.Excavator.dataIndex.model.IndexSearchParameters;
 import com.zhongzhou.Excavator.dataIndex.model.WebDataMongoData;
 import com.zhongzhou.Excavator.dataIndex.model.item.wheel.DataIndexedCorporation;
 import com.zhongzhou.Excavator.dataIndex.model.item.wheel.Wheel;
 import com.zhongzhou.Excavator.dataIndex.model.item.wheel.WheelSearchParameters;
+import com.zhongzhou.Excavator.dataIndex.service.exportService.excelTemplate.TemplateParser;
 import com.zhongzhou.common.util.BeanUtil;
 
 @Service
@@ -28,7 +34,10 @@ public class IndexedCorporationExportService {
 	@Autowired
 	WheelDAO wheelDAO;
 	
-	public void doExcelExport( IndexSearchParameters indexSearchParameters ){
+	@Autowired
+	TemplateParser templateParser;
+	
+	public void doExcelExport( IndexSearchParameters indexSearchParameters , OutputStream exceloutStream ) throws ExportTemplateException{
 		
 		IndexSearchParameters indexSearchParametersClone = null;
 		try {
@@ -42,16 +51,18 @@ public class IndexedCorporationExportService {
 		
 		long count = indexIntermediateReulstDAO.countCorporationIndexResult( indexSearchParametersClone );
 		
+		List<DataIndexedCorporation>  indexedCorps = new  ArrayList<DataIndexedCorporation>();
+		
 		int perProcessed = 50;
 		for( int i=0 ; i < count ; i+= perProcessed  ){
 			
 			indexSearchParametersClone.start = i;
 			indexSearchParametersClone.limit = perProcessed;
 			
-			List<DataIndexedCorporation>  indexedCorps = indexIntermediateReulstDAO.getCorporationIndexResult( indexSearchParametersClone );
+			List<DataIndexedCorporation> partIndexedCorps = indexIntermediateReulstDAO.getCorporationIndexResult( indexSearchParametersClone );
 			
 			List<String> wheelIds = new ArrayList<String>();
-			for( DataIndexedCorporation indexedCorporation : indexedCorps ){
+			for( DataIndexedCorporation indexedCorporation : partIndexedCorps ){
 				
 				if( indexedCorporation.wheelIDs != null ){
 					for( String wheelID : indexedCorporation.wheelIDs ){
@@ -74,7 +85,7 @@ public class IndexedCorporationExportService {
 				}
 			}
 				
-			for( DataIndexedCorporation corp : indexedCorps ){
+			for( DataIndexedCorporation corp : partIndexedCorps ){
 				corp.wheels = new ArrayList<Wheel>();
 				if( corp.wheelIDs != null ){
 					for( String wheelID : corp.wheelIDs ){
@@ -86,7 +97,18 @@ public class IndexedCorporationExportService {
 				}
 			}
 			
-			
+			indexedCorps.addAll( partIndexedCorps );
 		}
+		
+		Resource resource = new ClassPathResource(
+				"/template/excel/indexedCorp.xlsx"); 
+		InputStream tempalteStream;
+		try {
+			tempalteStream = resource.getInputStream();
+		} catch (IOException e) {
+			throw new ExportTemplateException( "No Valid template existed:" + resource , e );
+		} 
+		
+		templateParser.createExcelByTemplate( tempalteStream, exceloutStream, indexedCorps );
 	}
 }

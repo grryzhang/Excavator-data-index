@@ -4,6 +4,7 @@
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
 	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:websocket="http://www.springframework.org/schema/websocket"
 	xsi:schemaLocation="
 	http://www.springframework.org/schema/beans 
 	http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
@@ -15,6 +16,8 @@
 	http://www.springframework.org/schema/context/spring-context-3.2.xsd
 	http://www.springframework.org/schema/mvc 
 	http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd  
+	http://www.springframework.org/schema/websocket
+    http://www.springframework.org/schema/websocket/spring-websocket.xsd
 	">	 
 	<!--
 	 后置处理器，加载properites后在context配置文件中使用 ${XXX}来调用
@@ -53,7 +56,17 @@
     	<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Service" />  
     </context:component-scan>  
     <context:component-scan base-package="com.zhongzhou.common"/>   
-	
+    
+    <!-- websocket xml 配置 -->
+    <!--  * 是允许所有域名进入 -->
+    <bean id="indexWebSocketHandler" class="com.zhongzhou.Excavator.dataIndex.web.websocket.handler.IndexWebSocketHandler"/>
+    <websocket:handlers allowed-origins="*">
+        <websocket:mapping path="/indexRunningStatus" handler="indexWebSocketHandler"/>
+        <websocket:handshake-interceptors>
+            <bean class="org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor"/>
+        </websocket:handshake-interceptors>
+    </websocket:handlers>
+   
 	<!-- 发现是静态资源的请求，就将该请求转由Web应用服务器默认的Servlet处理 -->
 	<mvc:default-servlet-handler/> 	
 

@@ -63,51 +63,25 @@ public class TestWheelIndexService {
 		/*
 		List<String> material = 
 			new ArrayList<String>( Arrays.asList("alloy","aluminum") );
+			
+			List<String> material = 
+				new ArrayList<String>( Arrays.asList("steel","iron") );
 		
 		IndexCreateParameters createParameters = new IndexCreateParameters();
 		createParameters.material = material;
 		*/
 		
-		List<String> hubDiameterMatched = new ArrayList<String>( Arrays.asList("17","18") );
+		List<String> hubDiameterMatched = new ArrayList<String>( Arrays.asList("0-18") );
+		List<String> material = new ArrayList<String>( Arrays.asList("steel","iron") );
+		List<String> PCD = new ArrayList<String>( Arrays.asList( "0-180" ) );
 	
 		IndexCreateParameters createParameters = new IndexCreateParameters();
 		createParameters.hubDiameter = hubDiameterMatched;
+		createParameters.material = material;
+		createParameters.PCD = PCD;
 		
-		wheelIndexService.indexSuppliersOfMatchedWheel("test 17 18", createParameters);
-	}
-	
-	public void testWheelHubDiameterIndex(){
-		
-		List<String> hubDiameterMatched 
-			= hubDiameterIndexService.getMatchedWheelHubDiameter( 
-					new ArrayList<String>( Arrays.asList("17","18") )  
-			  );
-		
-		SourceSearchParameters searchParameters = new SourceSearchParameters();
-		searchParameters.wheelHubDiameter = hubDiameterMatched;
-		
-		List< WebDataMongoData<Wheel> > result = wheelDAO.getWheelData(searchParameters);
-		
-		System.out.println( result.size() );
-	}
-	
-	public void testWheelPCDIndex(){
-		
-		List<String> pcdMatched 
-			= pcdIndex.getMatchedPCD( 
-					new ArrayList<String>( Arrays.asList("114.3") )  
-			  );
-		
-		SourceSearchParameters searchParameters = new SourceSearchParameters();
-		searchParameters.wheelPCD = pcdMatched;
-		
-		List< WebDataMongoData<Wheel> > result = wheelDAO.getWheelData(searchParameters);
-		
-		for( WebDataMongoData<Wheel> one : result ){
-			System.out.print( one.getData().getName() + ":" );
-			System.out.println( one.getData().getPcd() );
-		}
-
-		System.out.println( result.size() );
+		//wheel-aluminum-index
+		//wheel-steel-index
+		wheelIndexService.indexSuppliersOfMatchedWheel("wheel-steel-index", createParameters);
 	}
 }

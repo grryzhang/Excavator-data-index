@@ -50,7 +50,7 @@ public class TestWheelSearchService {
 		List<DataIndexedCorporation> result = wheelSearchService.indexSuppliersOfMatchedWheel("indexID",searchParameters);
 		
 		for( DataIndexedCorporation dataIndexCorp : result ){
-			System.out.println( dataIndexCorp.corp.getName() + "|--|" +  dataIndexCorp.corp.getId() + "|--|" + dataIndexCorp.corpScore );
+			System.out.println( dataIndexCorp.corp.getName() + "|--|" +  dataIndexCorp.corp.getId() + "|--|" + dataIndexCorp.getCorpScore() );
 		}
 	}
 }

@@ -20,7 +20,7 @@ public class Wheel {
 	private Class modelClass;
 	private long insertTime;
 	/**图片id*/
-	private String imageId;
+	private List<String> imageId;
 	/**网页资源id*/
 	private String pageId;
 	/**产品名称*/
@@ -152,11 +152,11 @@ public class Wheel {
 		this.index = index;
 	}
 
-	public String getImageId() {
+	public List<String> getImageId() {
 		return imageId;
 	}
 
-	public void setImageId(String imageId) {
+	public void setImageId(List<String> imageId) {
 		this.imageId = imageId;
 	}
 

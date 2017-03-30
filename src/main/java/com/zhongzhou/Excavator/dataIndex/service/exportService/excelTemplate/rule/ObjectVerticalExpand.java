@@ -1,5 +1,6 @@
 package com.zhongzhou.Excavator.dataIndex.service.exportService.excelTemplate.rule;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -18,7 +19,7 @@ import com.zhongzhou.Excavator.dataIndex.service.exportService.excelTemplate.Exc
 import com.zhongzhou.Excavator.dataIndex.service.exportService.excelTemplate.ExportUtil;
 import com.zhongzhou.Excavator.dataIndex.service.exportService.excelTemplate.TemplateContext;
 
-public class ObjectExpand implements ExcelTemplateRule{
+public class ObjectVerticalExpand implements ExcelTemplateRule{
 	
 	public String dataExpression;
 	
@@ -73,34 +74,47 @@ public class ObjectExpand implements ExcelTemplateRule{
 			throw new ExportTemplateException( "Failed in " + ListAttach.class.toString() + ": data parsing." , e );
 		}
 		
-		int start = context.getLastRowNum() + 1;
+		int startRowNum = context.getLastRowNum() + 1;
+		
 		context.setVisableData( variableName, templateData );
-
-		for( ExcelTemplateRule rule : innerRules ){
-				
-			rule.render( context );
+		
+		List<ExcelTemplateRule> propagationInnerRules = new ArrayList<ExcelTemplateRule>();
+		
+		Map<Object, Object> beanMap = null;
+		try {
+			if( !(templateData instanceof Map) ){
+				beanMap = BeanUtil.bean2Map( templateData );
+			}else{
+				beanMap = (Map<Object, Object>)templateData;
+			}
+			if( beanMap == null ){
+				beanMap = new HashMap<Object, Object>(){{ put("","");}};
+			}
+		} catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
+			throw new ExportTemplateException(e);
 		}
+		for( int i=0; i<beanMap.size(); i++ ){
+			propagationInnerRules.addAll( this.innerRules );
+		}
+		
+		for( ExcelTemplateRule rule : propagationInnerRules ){
+			
+			rule.render( context );
+		}		
+		this.expendObjectData(startRowNum, beanMap, context);
 		
 		context.removeVisableData( variableName );
 	}
 	
-	private void expendObjectData( int startRowNum , Object templateData , TemplateContext context ) throws ExportTemplateException {
+	private void expendObjectData( int startRowNum , Map<Object, Object> beanMap , TemplateContext context ) throws ExportTemplateException {
 		
 		//TODO context.setLastRowNum( rowStart );
-		Map<String, Object> beanMap = null;
-		try {
-			beanMap = BeanUtil.bean2Map( templateData );
-			if( beanMap == null ){
-				beanMap = new HashMap<String, Object>(){{ put("","");}};
-			}
-		} catch (IllegalArgumentException | IllegalAccessException e) {
-			throw new ExportTemplateException(e);
-		}
-		
-		Iterator<String> dataKeyIterator = beanMap.keySet().iterator();
+
+		Iterator<Object> dataKeyIterator = beanMap.keySet().iterator();
 		
 		Sheet newSheet = context.getNewSheeet();
 		int lastRowNum = newSheet.getLastRowNum();
+		Object currentKey = null;
 		for( int i = startRowNum ; i<= lastRowNum ; i++ ){
 			Row row = newSheet.getRow( i );
 			
@@ -108,13 +122,7 @@ public class ObjectExpand implements ExcelTemplateRule{
 				
 				Iterator<Cell> cellIterator = row.iterator();
 				
-				Cell keyCell=null,valueCell = null;
-				
 				while( cellIterator.hasNext() ){
-					
-					if( keyCell != null && valueCell != null ){
-						break;
-					}
 					
 					Cell cell = cellIterator.next();
 					
@@ -122,17 +130,17 @@ public class ObjectExpand implements ExcelTemplateRule{
 						
 						String stringContent = cell.getStringCellValue();
 						
-						if( stringContent.toLowerCase().trim().startsWith("#key") && keyCell == null ){
-							keyCell = cell;
+						if( stringContent.toLowerCase().trim().startsWith("#key")){
+							if( dataKeyIterator.hasNext() ){
+								currentKey = dataKeyIterator.next();
+							}
+							cell.setCellValue( currentKey.toString() );
 						}
-						if( stringContent.toLowerCase().trim().startsWith("#value") && keyCell == null ){
-							valueCell = cell;
+						if( stringContent.toLowerCase().trim().startsWith("#value") ){
+							cell.setCellValue( beanMap.get(currentKey) == null ? "" : beanMap.get(currentKey).toString() );
 						}
-						
 					}
 				}
-				
-				
 			}
 		}
 	}

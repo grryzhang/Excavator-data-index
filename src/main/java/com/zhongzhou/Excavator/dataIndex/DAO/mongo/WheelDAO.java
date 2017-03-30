@@ -100,6 +100,7 @@ public class WheelDAO {
 			query.field("data.material").in( searchParameters.material );
 		}
 		
+		query.field("active").notEqual( false );
 		
 		if( searchParameters.limit > 0 && searchParameters.start >= 0 ){
 			query.offset( searchParameters.start ).limit( searchParameters.limit );

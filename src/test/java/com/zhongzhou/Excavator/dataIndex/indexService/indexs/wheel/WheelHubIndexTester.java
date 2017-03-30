@@ -19,12 +19,13 @@ import com.zhongzhou.Excavator.dataIndex.model.item.wheel.SourceSearchParameters
 import com.zhongzhou.Excavator.dataIndex.model.item.wheel.Wheel;
 import com.zhongzhou.Excavator.springsupport.injectlist.ServiceNameList;
 
-public class TestPCDIndex {
+public class WheelHubIndexTester {
 
 	private static XmlWebApplicationContext  context;
 	private static String[] configs = { "classpath:applicationContext.xml" }; 
 	
 	public static HubDiameterIndex wheelIndexService;
+	public static PCDIndex pcdIndex;
 	
 	@BeforeClass  
 	public static void configTest(){
@@ -35,7 +36,7 @@ public class TestPCDIndex {
 			
 			context.refresh();
 			
-			wheelIndexService = (HubDiameterIndex)context.getBean(  HubDiameterIndex.class );
+			pcdIndex           = (PCDIndex)context.getBean(  PCDIndex.class );
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -49,18 +50,17 @@ public class TestPCDIndex {
 	@Test
 	public void testParserWheelHubDiameterData() throws Exception{
 		
-		 List<String> conditions = new ArrayList( Arrays.asList( "0-18" ) );
-
-		 List<String> pendingCompaireData = new ArrayList( Arrays.asList( "19.5×6.75" ) );
+		 List<String> data = new ArrayList( Arrays.asList( "114.3" ) );
 		 
-		 
-		 List<String> result = wheelIndexService.getMatchedWheelHubDiameter(conditions, pendingCompaireData);
+		 Method method = PCDIndex.class.getDeclaredMethod("getMatchedPCD", new Class[]{ List.class });     
+	     method.setAccessible(true);  
+	     List<String> result = (List<String>)method.invoke( pcdIndex, data );  
 	     
 	     for( String oneMatched : result ){
 	    	 System.out.println( oneMatched + "|" );
 	     }
 
-	     //Assert.assertNotEquals( null, result );
-	     //Assert.assertEquals( true, result.size() <= 0 );
+	     Assert.assertNotEquals( null, result );
+	     Assert.assertEquals( true, result.size() > 0 );
 	}
 }

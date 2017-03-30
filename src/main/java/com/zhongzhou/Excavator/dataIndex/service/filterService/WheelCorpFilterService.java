@@ -11,6 +11,7 @@ import com.zhongzhou.Excavator.dataIndex.service.filterService.filters.Filter;
 import com.zhongzhou.Excavator.dataIndex.service.filterService.filters.FilterFactory;
 import com.zhongzhou.Excavator.dataIndex.model.item.wheel.Corporation;
 import com.zhongzhou.Excavator.dataIndex.model.item.wheel.DataIndexedCorporation;
+import com.zhongzhou.Excavator.dataIndex.model.item.wheel.IndexCreateParameters;
 import com.zhongzhou.common.util.BeanUtil;
 
 @Service
@@ -19,11 +20,20 @@ public class WheelCorpFilterService {
 	@Autowired
 	FilterFactory filterFactory;
 	
-	public List<DataIndexedCorporation> defaultWheelCorpFilter( List<DataIndexedCorporation> source ) throws DataIndexException{
+	private static String[] defaultFilterChain = {"wheel.corp.mainProduct","wheel.corp.businessType"};
+	
+	public List<DataIndexedCorporation> defaultWheelCorpFilter( List<DataIndexedCorporation> source  ) throws DataIndexException{
 		
-		Filter<DataIndexedCorporation> testFilter = filterFactory.getFilter("wheel.corp.mainProduct");
+		List<DataIndexedCorporation> tmp = new ArrayList<DataIndexedCorporation>();
+		tmp.addAll( source );
 		
-		List<DataIndexedCorporation> tmp = testFilter.filter(source);
+		for( String filterName : defaultFilterChain ){
+			
+			Filter<DataIndexedCorporation> testFilter = filterFactory.getFilter( filterName );
+			
+			tmp = testFilter.filter( tmp );
+		}
+		
 		
 		return tmp;
 	}

@@ -32,8 +32,8 @@ public class SheetCopy implements ExcelTemplateRule{
 				maxColumnNum = templateRow.getLastCellNum();
 			}
 		}
-		for (int i = 0 - columnOffset; i <= maxColumnNum; i++) {
-			targetSheet.setColumnWidth(i, templateSheet.getColumnWidth(i));
+		for  (int i=0, j = 0 - columnOffset; j < maxColumnNum; i++ , j++) {
+			targetSheet.setColumnWidth( i, templateSheet.getColumnWidth(j) );
 		}
 		
 		if( innerRules == null || innerRules.size()<=0 ){

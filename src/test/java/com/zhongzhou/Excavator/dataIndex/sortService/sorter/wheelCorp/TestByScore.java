@@ -74,7 +74,7 @@ public class TestByScore {
 		corporations = sorter.sort(corporations);
 		
 		for( DataIndexedCorporation dataIndexCorp : corporations ){
-			System.out.println( dataIndexCorp.corp.getName() + ":" + dataIndexCorp.corpScore );
+			System.out.println( dataIndexCorp.corp.getName() + ":" + dataIndexCorp.getCorpScore() );
 			
 			if( dataIndexCorp.scorExplain != null ){
 				for( String key : dataIndexCorp.scorExplain.keySet() ){
